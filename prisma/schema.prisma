@@ -19,18 +19,101 @@ model User {
   updatedAt     DateTime @updatedAt
   
   // Gamification
-  level         Int      @default(1)
-  xp            Int      @default(0)
-  currentStreak Int      @default(0)
-  longestStreak Int      @default(0)
-  lastActiveDate DateTime?
+
   
   // Relations
   courses          UserCourse[]
   questionAttempts QuestionAttempt[]
   assessments      UserAssessment[]
-  
+  stats            UserStats?
+
   @@map("users")
+  UserTopic UserTopic[]
+}
+
+model UserStats {
+    id            String   @id @default(cuid())
+    userId        String   @unique
+    totalQuestionsAnswered Int @default(0)
+    totalCorrectAnswers    Int @default(0)
+    totalTimeSpent         Int @default(0) // in milliseconds
+
+    level         Int      @default(1)
+    xp            Int      @default(0)
+    currentStreak Int      @default(0)
+    longestStreak Int      @default(0)
+    lastActiveDate DateTime?
+
+    user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    @@map("user_stats")
+}
+
+model QuestionAttempt {
+  id              String   @id @default(cuid())
+  userId          String
+  questionId      String
+  isCorrect       Boolean
+  timeSpent       Int?     // milliseconds
+  answeredAt      DateTime @default(now())
+  
+  // Active Recall Algorithm Fields
+//   easeFactor      Float    @default(2.5)  // SM-2 algorithm
+//   interval        Int      @default(0)    // Days until next review
+//   repetitions     Int      @default(0)    // Number of successful reviews
+//   nextReviewDate  DateTime?
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, questionId])
+//   @@index([userId, nextReviewDate])
+  @@map("question_attempts")
+}
+
+model UserCourse {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  enrolledAt DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@map("user_courses")
+}
+
+model UserAssessment {
+  id           String   @id @default(cuid())
+  userId       String
+  assessmentId String
+  isCompleted  Boolean  @default(false)
+  score        Int?
+  completedAt  DateTime?
+  
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, assessmentId])
+  @@index([userId])
+  @@map("user_assessments")
+}
+
+model UserTopic {
+    id        String   @id @default(cuid())
+    userId    String
+    topicId   String
+    score     Float    @default(0.0) // User's score in this topic
+    updatedAt DateTime @updatedAt
+    
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    topic     Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+    
+    @@unique([userId, topicId])
+    @@index([userId])
+    @@map("user_topics")
 }
 
 // ============================================
@@ -57,14 +140,13 @@ model Topic {
   id          String   @id @default(cuid())
   name        String
   description String?
-  score       Int      // Display score within course
   courseId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
   course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   subtopics   Subtopic[]
-  assessmentTopics AssessmentTopic[]
+  userTopics  UserTopic[]
   
   @@index([courseId])
   @@map("topics")
@@ -74,7 +156,7 @@ model Subtopic {
   id          String   @id @default(cuid())
   name        String
   description String?
-  order       Int      // Display order within topic
+  score       Int      // Display score within topic
   topicId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -93,12 +175,11 @@ model Subtopic {
 model Question {
   id            String   @id @default(cuid())
   question      String   @db.Text
-  correctAnswer String
-  wrongAnswer1  String?
-  wrongAnswer2  String?
-  wrongAnswer3  String?
+  choices      String[] // Multiple choice options
+  answerIndex   Int      // Index of the correct answer in choices array
+
   explanation   String?  @db.Text
-  difficulty    Int      @default(1) // 1-5 scale
+  difficulty    Int      @default(1) // 1-3 scale
   subtopicId    String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -109,49 +190,6 @@ model Question {
   @@index([subtopicId])
   @@index([difficulty])
   @@map("questions")
-}
-
-// ============================================
-// USER PROGRESS & ACTIVE RECALL
-// ============================================
-
-model QuestionAttempt {
-  id              String   @id @default(cuid())
-  userId          String
-  questionId      String
-  isCorrect       Boolean
-  timeSpent       Int?     // milliseconds
-  answeredAt      DateTime @default(now())
-  
-  // Active Recall Algorithm Fields
-  easeFactor      Float    @default(2.5)  // SM-2 algorithm
-  interval        Int      @default(0)    // Days until next review
-  repetitions     Int      @default(0)    // Number of successful reviews
-  nextReviewDate  DateTime?
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  
-  @@index([userId, questionId])
-  @@index([userId, nextReviewDate])
-  @@map("question_attempts")
-}
-
-// ============================================
-// USER COURSES (ENROLLMENT)
-// ============================================
-model UserCourse {
-  id         String   @id @default(cuid())
-  userId     String
-  courseId   String
-  enrolledAt DateTime @default(now())
-  
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, courseId])
-  @@index([userId])
-  @@map("user_courses")
 }
 
 // ============================================
@@ -168,38 +206,9 @@ model Assessment {
   updatedAt   DateTime @updatedAt
   
   course      Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  topics      AssessmentTopic[]
   users       UserAssessment[]
   
   @@index([courseId])
   @@index([date])
   @@map("assessments")
-}
-
-model AssessmentTopic {
-  id           String @id @default(cuid())
-  assessmentId String
-  topicId      String
-  
-  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  topic        Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  
-  @@unique([assessmentId, topicId])
-  @@map("assessment_topics")
-}
-
-model UserAssessment {
-  id           String   @id @default(cuid())
-  userId       String
-  assessmentId String
-  isCompleted  Boolean  @default(false)
-  score        Int?
-  completedAt  DateTime?
-  
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, assessmentId])
-  @@index([userId])
-  @@map("user_assessments")
 }

@@ -1,50 +1,23 @@
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import type { Event, Stats, Topic } from "@/lib/types";
+
 import { EnrollmentPanel } from "./EnrollmentPanel";
 import { SubjectStats } from "./SubjectStats";
 import { TopicPriorityList } from "./TopicPriorityList";
 import { UpcomingList } from "./UpcomingList";
 
-interface SubjectSectionProps {
+type SubjectSectionProps = {
   subjectId: string;
   name: string;
-  topics?: Array<{
-    id: string;
-    name: string;
-    accuracy: number;
-    priority: number;
-  }>;
-  events?: Array<{
-    id: string;
-    title: string;
-    dueAt: string;
-  }>;
-  stats?: {
-    accuracy: number;
-    timeMins: number;
-    questions: number;
-  };
-}
-
-const FALLBACK_TOPIC = {
-  id: "topic-placeholder",
-  name: "Topics coming soon",
-  accuracy: 0,
-  priority: 0,
+  topics?: Topic[];
+  events?: Event[];
+  stats?: Stats;
+  initiallyEnrolled?: boolean;
 };
 
-const FALLBACK_EVENT = {
-  id: "event-placeholder",
-  title: "No upcoming events",
-  dueAt: "TBD",
-};
-
-const FALLBACK_STATS = {
+const EMPTY_TOPICS: Topic[] = [];
+const EMPTY_EVENTS: Event[] = [];
+const FALLBACK_STATS: Stats = {
   accuracy: 0,
   timeMins: 0,
   questions: 0,
@@ -56,33 +29,25 @@ export function SubjectSection({
   topics,
   events,
   stats,
+  initiallyEnrolled,
 }: SubjectSectionProps) {
   const displayName = name?.trim() ? name : "Untitled subject";
-  const topicItems =
-    topics && topics.length > 0
-      ? topics
-      : [{ ...FALLBACK_TOPIC, id: `${subjectId}-${FALLBACK_TOPIC.id}` }];
-  const eventItems =
-    events && events.length > 0
-      ? events
-      : [{ ...FALLBACK_EVENT, id: `${subjectId}-${FALLBACK_EVENT.id}` }];
+  const topicItems = topics && topics.length > 0 ? topics : EMPTY_TOPICS;
+  const eventItems = events && events.length > 0 ? events : EMPTY_EVENTS;
   const statsData = stats ?? { ...FALLBACK_STATS };
 
   return (
-    <Card className="bg-muted/10 backdrop-blur">
-      <CardHeader className="border-b border-border pb-6">
-        <CardTitle className="text-xl font-semibold text-foreground">
-          {displayName}
-        </CardTitle>
-        <CardAction>
-          <EnrollmentPanel subjectId={subjectId} />
-        </CardAction>
-      </CardHeader>
-      <CardContent className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
-        <div className="grid gap-6">
-          <TopicPriorityList topics={topicItems} />
-          <UpcomingList events={eventItems} />
-        </div>
+    <Card className="rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-sm">
+      <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-6 py-4">
+        <h3 className="text-lg font-semibold">{displayName}</h3>
+        <EnrollmentPanel
+          subjectId={subjectId}
+          initiallyEnrolled={initiallyEnrolled}
+        />
+      </div>
+      <CardContent className="flex flex-col gap-6 px-6 py-6">
+        <TopicPriorityList topics={topicItems} />
+        <UpcomingList events={eventItems} />
         <SubjectStats stats={statsData} />
       </CardContent>
     </Card>

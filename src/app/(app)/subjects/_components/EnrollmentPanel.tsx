@@ -1,13 +1,9 @@
- "use client";
+"use client";
 
 import { useState } from "react";
 
-import { Button } from "../../../components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../../components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EnrollmentPanelProps {
   subjectId: string;
@@ -18,35 +14,29 @@ export function EnrollmentPanel({
   subjectId,
   initiallyEnrolled = false,
 }: EnrollmentPanelProps) {
-  const [isEnrolled, setIsEnrolled] = useState(initiallyEnrolled);
+  const [enrolled, setEnrolled] = useState(Boolean(initiallyEnrolled));
 
-  const label = isEnrolled ? "Enrolled" : "Enroll";
-  const variant = isEnrolled ? "secondary" : "default";
+  const label = enrolled ? "Remove" : "Enroll";
+  const variant = enrolled ? "destructive" : "default";
+  const tooltipText = enrolled
+    ? "Click to remove this subject from your list"
+    : "Click to enroll in this subject";
 
-  const toggleEnrollment = () => {
-    setIsEnrolled((prev) => !prev);
-  };
-
-  const button = (
-    <Button
-      type="button"
-      variant={variant}
-      aria-pressed={isEnrolled}
-      onClick={toggleEnrollment}
-      data-subject-id={subjectId}
-    >
-      {label}
-    </Button>
-  );
-
-  return typeof Tooltip !== "undefined" ? (
+  return (
     <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent>
-        {isEnrolled ? "Click to remove from your enrolled subjects" : "Click to enroll in this subject"}
-      </TooltipContent>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          size="sm"
+          variant={variant}
+          aria-pressed={enrolled}
+          onClick={() => setEnrolled((state) => !state)}
+          data-subject-id={subjectId}
+        >
+          {label}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{tooltipText}</TooltipContent>
     </Tooltip>
-  ) : (
-    button
   );
 }

@@ -1,57 +1,59 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "../../../components/ui/card";
+import type { Stats } from "@/lib/types";
 
-interface SubjectStatsProps {
-  stats: {
-    accuracy: number;
-    timeMins: number;
-    questions: number;
-  };
-}
-
-interface StatProps {
-  label: string;
-  value: string;
-  description?: string;
-}
-
-function Stat({ label, value, description }: StatProps) {
-  return (
-    <Card className="gap-0 border-[var(--border)] bg-transparent shadow-none">
-      <CardContent className="px-5 py-4">
-        <CardDescription className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
-          {label}
-        </CardDescription>
-        <CardTitle className="text-2xl font-semibold text-foreground">
-          {value}
-        </CardTitle>
-        {description ? (
-          <p className="text-[var(--text-muted)] text-xs">{description}</p>
-        ) : null}
-      </CardContent>
-    </Card>
-  );
-}
+type SubjectStatsProps = {
+  stats: Stats;
+};
 
 export function SubjectStats({ stats }: SubjectStatsProps) {
-  const { accuracy, timeMins, questions } = stats;
-
-  const safeAccuracy =
-    Number.isFinite(accuracy) && accuracy >= 0 ? accuracy : 0;
-  const safeTimeMins =
-    Number.isFinite(timeMins) && timeMins >= 0 ? timeMins : 0;
-  const safeQuestions =
-    Number.isFinite(questions) && questions >= 0 ? questions : 0;
+  const accuracyPercent = clampToPercent(stats.accuracy);
+  const totalMinutes = clampToNonNegative(stats.timeMins);
+  const totalQuestions = clampToNonNegative(stats.questions);
 
   return (
-    <section className="grid gap-4 sm:grid-cols-3">
-      <Stat label="Accuracy" value={`${Math.round(safeAccuracy)}%`} />
-      <Stat label="Time" value={`${Math.round(safeTimeMins)} m`} />
-      <Stat label="Questions" value={`${Math.round(safeQuestions)}`} />
+    <section className="flex flex-col gap-4">
+      <h4 className="text-base font-semibold text-[var(--text)]">
+        Performance Overview
+      </h4>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Stat label="Accuracy" value={`${accuracyPercent}%`} />
+        <Stat label="Time" value={`${totalMinutes} m`} />
+        <Stat label="Questions" value={`${totalQuestions}`} />
+      </div>
     </section>
   );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)]/60 p-3">
+      <span className="text-xs font-semibold uppercase text-[var(--text-muted)]">
+        {label}
+      </span>
+      <p className="mt-1 text-lg font-semibold text-[var(--text)]">{value}</p>
+    </div>
+  );
+}
+
+function clampToPercent(value: number) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+
+  if (value > 1) {
+    return Math.round(Math.min(value, 100));
+  }
+
+  if (value < 0) {
+    return 0;
+  }
+
+  return Math.round(value * 100);
+}
+
+function clampToNonNegative(value: number) {
+  if (!Number.isFinite(value) || value < 0) {
+    return 0;
+  }
+
+  return Math.round(value);
 }

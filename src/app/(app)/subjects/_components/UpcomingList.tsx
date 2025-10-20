@@ -1,49 +1,51 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/app/components/ui/card";
-
-type UpcomingEvent = {
-  id: string;
-  title: string;
-  dueAt: string;
-};
+import type { Event } from "@/lib/types";
 
 type UpcomingListProps = {
-  events: UpcomingEvent[];
+  events: Event[];
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
-
 export function UpcomingList({ events }: UpcomingListProps) {
-  return (
-    <Card className="w-full rounded-3xl border border-border/50 bg-card shadow-lg">
-      <CardHeader className="px-6 pb-4 pt-6">
-        <CardTitle className="text-xl font-semibold text-card-foreground">
-          Upcoming Deadlines
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-6 pb-6">
-        <ul className="space-y-3">
-          {events.map((event) => {
-            const formattedDue = dateFormatter.format(new Date(event.dueAt));
+  const hasEvents = events.length > 0;
 
-            return (
-              <li
-                key={event.id}
-                className="rounded-md border border-[color:var(--border)] bg-[color:var(--card)]/60 px-4 py-3 transition hover:bg-[color:var(--muted)]/35"
-              >
-                <strong className="block text-sm font-semibold text-[color:var(--foreground)]">
-                  {event.title}
-                </strong>
-                <span className="mt-1 block text-xs text-[color:var(--muted-foreground)]">
-                  {formattedDue}
-                </span>
-              </li>
-            );
-          })}
+  return (
+    <section className="flex flex-col gap-4">
+      <h4 className="text-base font-semibold text-[var(--text)]">
+        Upcoming Deadlines
+      </h4>
+      {hasEvents ? (
+        <ul className="space-y-2">
+          {events.map((event) => (
+            <li
+              key={event.id}
+              className="rounded-lg border border-[var(--border)] bg-[var(--surface)]/60 p-3 transition hover:bg-[var(--surface)]/80"
+            >
+              <span className="block text-sm font-medium text-[var(--text)]">
+                {event.title}
+              </span>
+              <span className="text-xs text-[var(--text-muted)]">
+                {formatDateTime(event.dueAt)}
+              </span>
+            </li>
+          ))}
         </ul>
-      </CardContent>
-    </Card>
+      ) : (
+        <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)]/40 px-4 py-6 text-center text-sm text-[var(--text-muted)]">
+          No upcoming events scheduled.
+        </p>
+      )}
+    </section>
   );
+}
+
+function formatDateTime(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date to be confirmed";
+  }
+
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }

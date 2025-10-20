@@ -13,17 +13,6 @@ import {
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
 
-const flattenQuestionIds = (
-  items: {
-    questions: { id: string; difficulty: number }[];
-  }[],
-) =>
-  items.flatMap((subtopic: (typeof items)[number]) =>
-    subtopic.questions.map(
-      (question: (typeof subtopic.questions)[number]) => question.id,
-    ),
-  );
-
 export const subtopicRouter = createTRPCRouter({
   byTopic: protectedProcedure
     .input(z.object({ topicId: z.string() }))
@@ -39,12 +28,11 @@ export const subtopicRouter = createTRPCRouter({
         orderBy: { score: "desc" },
       });
 
-      const questionIds = flattenQuestionIds(subtopics);
+      const questionIds = subtopics.flatMap((subtopic) =>
+        subtopic.questions.map((question) => question.id),
+      );
 
-      const attemptCounts: {
-        questionId: string;
-        _count: { _all: number };
-      }[] =
+      const attemptCounts =
         questionIds.length === 0
           ? []
           : await db.questionAttempt.groupBy({
@@ -57,16 +45,13 @@ export const subtopicRouter = createTRPCRouter({
             });
 
       const countsByQuestion = new Map(
-        attemptCounts.map(
-          (entry: (typeof attemptCounts)[number]) =>
-            [entry.questionId, entry._count._all] as const,
-        ),
+        attemptCounts.map((entry) => [entry.questionId, entry._count._all] as const),
       );
 
-      return subtopics.map((subtopic: (typeof subtopics)[number]) => {
+      return subtopics.map((subtopic) => {
         const totalQuestions = subtopic.questions.length;
         const totalAttempts = subtopic.questions.reduce(
-          (sum: number, question: (typeof subtopic.questions)[number]) =>
+          (sum, question) =>
             sum + (countsByQuestion.get(question.id) ?? 0),
           0,
         );
@@ -129,14 +114,12 @@ export const subtopicRouter = createTRPCRouter({
         description: subtopic.description,
         score: subtopic.score,
         topic: subtopic.topic,
-        questions: subtopic.questions.map(
-          (question: (typeof subtopic.questions)[number]) => ({
-            id: question.id,
-            difficulty: question.difficulty,
-            answerIndex: question.answerIndex,
-            attempts: question.attempts,
-          }),
-        ),
+        questions: subtopic.questions.map((question) => ({
+          id: question.id,
+          difficulty: question.difficulty,
+          answerIndex: question.answerIndex,
+          attempts: question.attempts,
+        })),
       };
     }),
 
@@ -147,10 +130,10 @@ export const subtopicRouter = createTRPCRouter({
         score: z.number().int().min(0).max(100),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       const subtopic = await db.subtopic.findUnique({
         where: { id: input.subtopicId },
-        select: { topicId: true },
+        select: { id: true },
       });
 
       if (!subtopic) {

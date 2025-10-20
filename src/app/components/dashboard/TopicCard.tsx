@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 
-export function LevelCard() {
+export function TopicCard() {
     return (
         <Card className = "w-64 bg-muted/5 text-center shadow-sm">
             <CardContent className = "flex flex-row items-centre gap-4 p-6">

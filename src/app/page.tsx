@@ -1,4 +1,4 @@
-import Link from "next/link";
+//Landing page should go here if we make one
 
 import { LatestPost } from "~/app/_components/post";
 import { auth } from "~/server/auth";

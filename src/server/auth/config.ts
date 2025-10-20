@@ -1,8 +1,8 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-
+import GoogleProvider from "next-auth/providers/google";
 import { db } from "~/server/db";
+import Resend from "next-auth/providers/resend";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,7 +32,15 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
+    GoogleProvider({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    }), 
+    Resend({
+      // If your environment variable is named differently than default
+      apiKey: process.env.AUTH_RESEND_KEY,
+      from: "no-reply@company.com"
+    }),
     /**
      * ...add more providers here.
      *
@@ -52,5 +60,5 @@ export const authConfig = {
         id: user.id,
       },
     }),
-  },
+    },
 } satisfies NextAuthConfig;

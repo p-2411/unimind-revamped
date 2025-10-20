@@ -8,12 +8,14 @@ datasource db {
 }
 
 // ============================================
-// USER & AUTHENTICATION
+// USER
 // ============================================
 
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
+  emailVerified DateTime?
+  password      String?
   name          String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -26,9 +28,10 @@ model User {
   questionAttempts QuestionAttempt[]
   assessments      UserAssessment[]
   stats            UserStats?
+  userTopics           UserTopic[]
 
   @@map("users")
-  UserTopic UserTopic[]
+  
 }
 
 model UserStats {
@@ -212,3 +215,10 @@ model Assessment {
   @@index([date])
   @@map("assessments")
 }
+
+
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+

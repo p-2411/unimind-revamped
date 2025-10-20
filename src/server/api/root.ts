@@ -1,5 +1,6 @@
 import { assessmentRouter } from "~/server/api/routers/assessment";
 import { courseRouter } from "~/server/api/routers/course";
+import { postRouter } from "~/server/api/routers/post";
 import { questionRouter } from "~/server/api/routers/question";
 import { statsRouter } from "~/server/api/routers/stats";
 import { subtopicRouter } from "~/server/api/routers/subtopic";
@@ -12,6 +13,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  post: postRouter,
   course: courseRouter,
   topic: topicRouter,
   subtopic: subtopicRouter,

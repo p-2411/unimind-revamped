@@ -1,5 +1,6 @@
 //Landing page should go here if we make one
 
+import Link from "next/link";
 import { LatestPost } from "~/app/_components/post";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";

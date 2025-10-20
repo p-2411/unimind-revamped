@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { Card, CardContent } from "~/app/components/ui/card";
-import { Button } from "~/app/components/ui/button";
+import { Card, CardContent } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
 
 export function TopicCard() {
     return (

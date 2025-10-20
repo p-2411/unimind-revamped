@@ -1,4 +1,4 @@
-import { Card, CardTitle, CardHeader, CardContent } from "../ui/card";
+import { Card, CardTitle, CardHeader, CardContent } from "../../../components/ui/card";
 
 export default function UpcomingTasksCard() {
     return (

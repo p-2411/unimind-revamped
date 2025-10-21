@@ -3,37 +3,73 @@
 @tailwind utilities;
 
 @layer base {
-  /* === Default (light / gray) theme === */
   :root {
-    --background: 0 0% 90%;
-    --foreground: 0 0% 10%;
+    --app-bg: 222 45% 97%;
+    --surface: 210 40% 99%;
+    --surface-muted: 216 32% 96%;
+    --surface-strong: 213 28% 92%;
+    --text: 222 47% 12%;
+    --text-muted: 220 15% 46%;
+    --border: 219 28% 86%;
+    --track: 218 32% 90%;
 
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 10%;
-
-    --secondary: 0 0% 88%;
-    --secondary-foreground: 0 0% 10%;
-
-    --muted: 0 0% 80%;
+    --background: 222 45% 97%;
+    --foreground: 222 47% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 12%;
+    --muted: 216 32% 96%;
+    --muted-foreground: 220 15% 46%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 12%;
+    --border-strong: 219 24% 82%;
+    --primary: 248 85% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 199 89% 78%;
+    --secondary-foreground: 218 39% 15%;
+    --accent: 162 69% 72%;
+    --accent-foreground: 219 47% 18%;
+    --destructive: 8 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 248 72% 68%;
+    --radius: 1.25rem;
+    --text-on-primary: 0 0% 100%;
   }
 
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: system-ui, -apple-system, "Inter", sans-serif;
+    background-color: hsl(var(--app-bg));
+    color: hsl(var(--text));
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-feature-settings: "ss01" on, "case" on;
   }
 
-  /* === Dark theme overrides === */
   .dark {
-    --background: 240 5% 5%;
-    --foreground: 0 0% 98%;
+    --app-bg: 222 28% 10%;
+    --surface: 220 26% 12%;
+    --surface-muted: 220 24% 18%;
+    --surface-strong: 220 20% 24%;
+    --text: 213 32% 92%;
+    --text-muted: 215 16% 70%;
+    --border: 220 18% 28%;
+    --track: 220 20% 24%;
 
-    --primary: 240 5% 12%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 240 4% 15%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 240 3% 20%;
+    --background: 222 28% 10%;
+    --foreground: 213 32% 92%;
+    --card: 220 26% 12%;
+    --card-foreground: 213 32% 92%;
+    --muted: 220 24% 18%;
+    --muted-foreground: 215 16% 70%;
+    --popover: 220 26% 12%;
+    --popover-foreground: 213 32% 92%;
+    --border-strong: 220 20% 32%;
+    --primary: 248 95% 76%;
+    --primary-foreground: 220 26% 12%;
+    --secondary: 199 90% 72%;
+    --secondary-foreground: 222 28% 10%;
+    --accent: 160 66% 60%;
+    --accent-foreground: 222 28% 10%;
+    --destructive: 8 84% 60%;
+    --destructive-foreground: 220 26% 12%;
+    --ring: 248 95% 76%;
+    --text-on-primary: 220 26% 12%;
   }
 }

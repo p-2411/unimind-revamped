@@ -11,12 +11,17 @@ export function TopicPriorityList({ topics }: TopicPriorityListProps) {
   );
 
   return (
-    <section className="flex flex-col gap-4">
-      <h4 className="text-base font-semibold text-[var(--text)]">
-        Topic Priority
-      </h4>
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+          Topic priority
+        </h4>
+        <span className="rounded-full bg-[var(--primary)]/12 px-3 py-1 text-xs font-medium text-[var(--primary)]">
+          {sortedTopics.length} topics
+        </span>
+      </div>
       {sortedTopics.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)]/40 px-4 py-6 text-center text-sm text-[var(--text-muted)]">
+        <p className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)]/50 px-4 py-6 text-center text-sm text-[var(--text-muted)]">
           No topics assigned yet.
         </p>
       ) : (
@@ -28,18 +33,18 @@ export function TopicPriorityList({ topics }: TopicPriorityListProps) {
             return (
               <li
                 key={topic.id}
-                className="rounded-lg border border-[var(--border)] bg-[var(--surface)]/60 p-4"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--surface)]/90 p-4 shadow-sm transition hover:border-[var(--primary)]/45 hover:bg-[var(--surface-muted)]"
               >
-                <div className="flex items-center justify-between text-sm font-medium text-[var(--text)]">
+                <div className="flex items-center justify-between text-sm font-semibold text-[var(--text)]">
                   <span>{topic.name}</span>
-                  <span className="text-[var(--text-muted)]">
-                    Priority {priorityPercent}%
+                  <span className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                    {priorityPercent}%
                   </span>
                 </div>
-                <div className="mt-2">
+                <div className="mt-3">
                   <Progress
                     value={priorityPercent}
-                    className="bg-[var(--track)] [&_[data-slot=progress-indicator]]:bg-[var(--primary)]"
+                    className="h-2 bg-[var(--track)] [&_[data-slot=progress-indicator]]:bg-[var(--primary)]"
                   />
                 </div>
                 <p className="mt-2 text-xs text-[var(--text-muted)]">

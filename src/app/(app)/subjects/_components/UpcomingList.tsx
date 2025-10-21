@@ -8,20 +8,25 @@ export function UpcomingList({ events }: UpcomingListProps) {
   const hasEvents = events.length > 0;
 
   return (
-    <section className="flex flex-col gap-4">
-      <h4 className="text-base font-semibold text-[var(--text)]">
-        Upcoming Deadlines
-      </h4>
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+          Upcoming deadlines
+        </h4>
+        {hasEvents ? (
+          <span className="text-xs text-[var(--text-muted)]">
+            Next {Math.min(events.length, 3)} events
+          </span>
+        ) : null}
+      </div>
       {hasEvents ? (
         <ul className="space-y-2">
           {events.map((event) => (
             <li
               key={event.id}
-              className="rounded-lg border border-[var(--border)] bg-[var(--surface)]/60 p-3 transition hover:bg-[var(--surface)]/80"
+              className="flex flex-col gap-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)]/90 px-4 py-3 text-sm text-[var(--text)] transition hover:border-[var(--primary)]/45 hover:bg-[var(--surface-muted)]"
             >
-              <span className="block text-sm font-medium text-[var(--text)]">
-                {event.title}
-              </span>
+              <span className="font-semibold">{event.title}</span>
               <span className="text-xs text-[var(--text-muted)]">
                 {formatDateTime(event.dueAt)}
               </span>
@@ -29,7 +34,7 @@ export function UpcomingList({ events }: UpcomingListProps) {
           ))}
         </ul>
       ) : (
-        <p className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface)]/40 px-4 py-6 text-center text-sm text-[var(--text-muted)]">
+        <p className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface-muted)]/50 px-4 py-6 text-center text-sm text-[var(--text-muted)]">
           No upcoming events scheduled.
         </p>
       )}

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Progress } from "../../../components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const stubProgress = {
   userName: "Alex Rivers",
@@ -16,88 +16,90 @@ const xpPercentage = Math.round(
 );
 
 export function UserProgressCard() {
+  const initials = stubProgress.userName
+    .split(" ")
+    .map((chunk) => chunk[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   const xpRemaining = stubProgress.xpNext - stubProgress.xpCurrent;
 
   return (
-    <Card className="w-full max-w-md rounded-3xl border border-border/60 bg-card shadow-lg transition hover:shadow-xl">
-      <CardHeader className="rounded-t-3xl px-7 pb-4 pt-6">
-        <div className="flex items-start justify-between gap-4">
+    <Card className="rounded-3xl border border-[var(--border)] bg-[var(--surface)]/95 text-[var(--text)] shadow-xl">
+      <CardHeader className="flex flex-col gap-6 px-7 pb-0 pt-7">
+        <div className="flex items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-muted shadow-[inset_0_0_12px_rgb(0_0_0/0.06)]">
-              <span className="text-2xl font-semibold text-muted-foreground">
-                {stubProgress.userName
-                  .split(" ")
-                  .map((chunk) => chunk[0])
-                  .join("")
-                  .slice(0, 2)}
+            <div className="grid size-16 place-items-center rounded-2xl bg-[var(--surface-muted)] shadow-inner">
+              <span className="text-2xl font-semibold text-[var(--text)]/90">
+                {initials}
               </span>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--text-muted)]">
                 Learner profile
               </p>
-              <CardTitle className="text-xl font-semibold text-foreground">
+              <CardTitle className="text-2xl font-semibold text-[var(--text)]">
                 {stubProgress.userName}
               </CardTitle>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[var(--text-muted)]">
                 {stubProgress.streakDays}-day streak · Rank #{stubProgress.rank}
               </p>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1 rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/80 px-5 py-4 text-primary-foreground shadow-lg">
-            <span className="text-xs uppercase tracking-wide text-primary-foreground/80">
-              Level
-            </span>
-            <span className="text-3xl font-bold leading-none">
-              {stubProgress.level}
-            </span>
+          <div className="grid place-items-center rounded-2xl bg-[var(--primary)] text-[var(--text-on-primary)] shadow-lg shadow-[var(--primary)]/40">
+            <div className="flex flex-col items-center gap-1 px-6 py-4">
+              <span className="text-[0.7rem] uppercase tracking-[0.3em] opacity-80">
+                Level
+              </span>
+              <span className="text-3xl font-bold leading-none">
+                {stubProgress.level}
+              </span>
+            </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-5 px-7 pb-6 pt-2">
-        <div className="rounded-2xl border border-border/50 bg-muted/30 p-4">
+      <CardContent className="space-y-6 px-7 pb-7 pt-6">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)]/80 p-4 shadow-sm">
           <div className="flex items-center justify-between text-sm font-medium">
-            <span className="text-muted-foreground">XP Progress</span>
-            <span className="text-foreground">
+            <span className="text-[var(--text-muted)]">XP progress</span>
+            <span>
               {stubProgress.xpCurrent} / {stubProgress.xpNext}
             </span>
           </div>
           <Progress
             value={xpPercentage}
-            className="mt-3 h-3 bg-muted/50"
+            className="mt-3 h-3 bg-[var(--track)] [&_[data-slot=progress-indicator]]:bg-[var(--primary)]"
           />
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-2 text-xs text-[var(--text-muted)]">
             {xpRemaining} XP until level {stubProgress.level + 1}.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-border/40 bg-card/70 px-4 py-3 text-center shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground/80">
-              Rank
-            </p>
-            <p className="text-lg font-semibold text-foreground">
-              #{stubProgress.rank}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border/40 bg-card/70 px-4 py-3 text-center shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground/80">
-              Streak
-            </p>
-            <p className="text-lg font-semibold text-foreground">
-              {stubProgress.streakDays} days
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border/40 bg-gradient-to-br from-amber-300/80 via-amber-200/80 to-amber-100/80 px-4 py-3 text-center shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-amber-900/70">
-              Badge
-            </p>
-            <p className="text-lg font-semibold text-amber-900">
-              {stubProgress.badgeLabel}
-            </p>
-          </div>
+          <Stat label="Rank" value={`#${stubProgress.rank}`} />
+          <Stat label="Streak" value={`${stubProgress.streakDays} days`} />
+          <Stat label="Badge" value={stubProgress.badgeLabel} accent />
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div
+      className={[
+        "rounded-2xl border px-4 py-3 text-center shadow-sm",
+        accent
+          ? "border-transparent bg-gradient-to-br from-[var(--primary)]/30 via-[var(--primary)]/20 to-[var(--accent)]/25 text-[var(--text)]"
+          : "border-[var(--border)] bg-[var(--surface)]/90 text-[var(--text)]",
+      ].join(" ")}
+    >
+      <p className="text-[0.65rem] uppercase tracking-[0.3em] text-[var(--text-muted)]">
+        {label}
+      </p>
+      <p className="mt-2 text-lg font-semibold">{value}</p>
+    </div>
   );
 }

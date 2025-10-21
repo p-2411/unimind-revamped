@@ -15,8 +15,6 @@ type SubjectSectionProps = {
   initiallyEnrolled?: boolean;
 };
 
-const EMPTY_TOPICS: Topic[] = [];
-const EMPTY_EVENTS: Event[] = [];
 const FALLBACK_STATS: Stats = {
   accuracy: 0,
   timeMins: 0,
@@ -32,23 +30,31 @@ export function SubjectSection({
   initiallyEnrolled,
 }: SubjectSectionProps) {
   const displayName = name?.trim() ? name : "Untitled subject";
-  const topicItems = topics && topics.length > 0 ? topics : EMPTY_TOPICS;
-  const eventItems = events && events.length > 0 ? events : EMPTY_EVENTS;
+  const topicItems = topics ?? [];
+  const eventItems = events ?? [];
   const statsData = stats ?? { ...FALLBACK_STATS };
 
   return (
-    <Card className="rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-sm">
-      <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-6 py-4">
-        <h3 className="text-lg font-semibold">{displayName}</h3>
-        <EnrollmentPanel
-          subjectId={subjectId}
-          initiallyEnrolled={initiallyEnrolled}
-        />
+    <Card className="flex h-full flex-col rounded-3xl border border-[var(--border)] bg-[var(--surface)]/95 text-[var(--text)] shadow-lg">
+      <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface-muted)]/70 px-6 py-5">
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--text-muted)]">
+            Subject
+          </span>
+          <h3 className="text-lg font-semibold leading-tight text-[var(--text)]">
+            {displayName}
+          </h3>
+        </div>
+        <EnrollmentPanel subjectId={subjectId} initiallyEnrolled={initiallyEnrolled} />
       </div>
       <CardContent className="flex flex-col gap-6 px-6 py-6">
-        <TopicPriorityList topics={topicItems} />
-        <UpcomingList events={eventItems} />
-        <SubjectStats stats={statsData} />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-6">
+            <TopicPriorityList topics={topicItems} />
+            <UpcomingList events={eventItems} />
+          </div>
+          <SubjectStats stats={statsData} />
+        </div>
       </CardContent>
     </Card>
   );

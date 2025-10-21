@@ -11,12 +11,12 @@ export function SubjectStats({ stats }: SubjectStatsProps) {
 
   return (
     <section className="flex flex-col gap-4">
-      <h4 className="text-base font-semibold text-[var(--text)]">
-        Performance Overview
+      <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+        Performance overview
       </h4>
       <div className="grid gap-3 sm:grid-cols-3">
         <Stat label="Accuracy" value={`${accuracyPercent}%`} />
-        <Stat label="Time" value={`${totalMinutes} m`} />
+        <Stat label="Study time" value={`${totalMinutes} m`} />
         <Stat label="Questions" value={`${totalQuestions}`} />
       </div>
     </section>
@@ -25,11 +25,11 @@ export function SubjectStats({ stats }: SubjectStatsProps) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)]/60 p-3">
-      <span className="text-xs font-semibold uppercase text-[var(--text-muted)]">
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)]/90 p-4 shadow-sm">
+      <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--text-muted)]">
         {label}
       </span>
-      <p className="mt-1 text-lg font-semibold text-[var(--text)]">{value}</p>
+      <p className="mt-2 text-2xl font-semibold text-[var(--text)]">{value}</p>
     </div>
   );
 }

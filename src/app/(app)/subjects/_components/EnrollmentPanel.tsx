@@ -16,11 +16,10 @@ export function EnrollmentPanel({
 }: EnrollmentPanelProps) {
   const [enrolled, setEnrolled] = useState(Boolean(initiallyEnrolled));
 
-  const label = enrolled ? "Remove" : "Enroll";
-  const variant = enrolled ? "destructive" : "default";
+  const label = enrolled ? "Enrolled" : "Enroll";
   const tooltipText = enrolled
-    ? "Click to remove this subject from your list"
-    : "Click to enroll in this subject";
+    ? "Remove this subject from your enrolled list"
+    : "Add this subject to your enrolled list";
 
   return (
     <Tooltip>
@@ -28,7 +27,13 @@ export function EnrollmentPanel({
         <Button
           type="button"
           size="sm"
-          variant={variant}
+          variant={enrolled ? "outline" : "default"}
+          className={[
+            "rounded-full px-5",
+            enrolled
+              ? "border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/15"
+              : "bg-[var(--primary)] text-[var(--text-on-primary)] hover:bg-[var(--primary)]/90",
+          ].join(" ")}
           aria-pressed={enrolled}
           onClick={() => setEnrolled((state) => !state)}
           data-subject-id={subjectId}

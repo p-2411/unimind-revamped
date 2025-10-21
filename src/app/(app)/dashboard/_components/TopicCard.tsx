@@ -1,13 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-
-export type TopicCardProps = {
-  title: string;
-  category: string;
-  icon: string;
-  mastery: number;
-};
+'use client'
+import Image from "next/image";
+import { Card, CardContent } from "~/app/components/ui/card";
+import { Button } from "~/app/components/ui/button";
 
 export function TopicCard({ title, category, icon, mastery }: TopicCardProps) {
   const masteryPercent = Math.round(mastery * 100);

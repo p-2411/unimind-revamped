@@ -1,25 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const upcomingTasks = [
-  {
-    id: "task-1",
-    title: "Assessment 1",
-    course: "Mathematics",
-    dueLabel: "Due today",
-  },
-  {
-    id: "task-2",
-    title: "Project outline",
-    course: "Physics",
-    dueLabel: "Due in 2 days",
-  },
-  {
-    id: "task-3",
-    title: "Revision session",
-    course: "History",
-    dueLabel: "Due Friday",
-  },
-] as const;
+import { Card, CardTitle, CardHeader, CardContent } from "~/app/components/ui/card";
 
 export default function UpcomingTasksCard() {
   return (

@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { QuestionCard } from "./_components/QuestionCard";
-import { TopicCard, type TopicCardProps } from "./_components/TopicCard";
-import UpcomingTasksCard from "./_components/Upcoming";
-import { UserProgressCard } from "./_components/UserProgressCard";
-import Welcome from "./_components/Welcome";
+import { QuestionCard } from "../dashboard/_components/QuestionCard";
+import UpcomingTasksCard from "../dashboard/_components/Upcoming";
+import  {TopicCard}  from "../dashboard/_components/TopicCard";
+import { LatestPost } from "~/app/components/post";
+import { auth } from "~/server/auth";
+import { api, HydrateClient } from "~/trpc/server";
 
 const quickStats = [
   {

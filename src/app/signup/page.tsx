@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -17,20 +18,41 @@ export default function LoginPage() {
         const formData = new FormData(e.currentTarget);
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
+        const confirmPassword = formData.get("confirmPassword") as string;
+        const name = formData.get("name") as string;
+
+        // Validation
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            setIsLoading(false);
+            return;
+        }
+
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters long");
+            setIsLoading(false);
+            return;
+        }
 
         try {
-            const result = await signIn("credentials", {
-                email,
-                password,
-                redirect: false,
+            const response = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password, name }),
             });
 
-            if (result?.error) {
-                setError(result.error);
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.error || "Failed to create account");
             } else {
-                // Successful login
-                router.push("/dashboard");
-                router.refresh();
+                setSuccess(true);
+                // Wait 2 seconds then redirect to login
+                setTimeout(() => {
+                    router.push("/login");
+                }, 2000);
             }
         } catch (error) {
             setError("An unexpected error occurred. Please try again.");
@@ -55,9 +77,9 @@ export default function LoginPage() {
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        Welcome Back
+                        Get Started
                     </h1>
-                    <p className="mt-2 text-gray-600">Sign in to your UniMind account</p>
+                    <p className="mt-2 text-gray-600 ">Create your UniMind account</p>
                 </div>
 
                 {/* Card */}
@@ -74,10 +96,21 @@ export default function LoginPage() {
                     </div>
                 )}
 
+                {success && (
+                    <div className="mb-6 rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-800">
+                        <div className="flex items-start gap-3">
+                            <svg className="h-5 w-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span>Account created successfully! Please check your email to verify your account. Redirecting to login...</span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Google Sign In */}
                 <button
                     onClick={handleGoogleSignIn}
-                    disabled={isLoading}
+                    disabled={isLoading || success}
                     className="w-full flex items-center justify-center gap-3 rounded-lg border-2 border-gray-200 bg-white px-4 py-3 font-medium text-gray-700 transition-all hover:border-gray-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -96,8 +129,23 @@ export default function LoginPage() {
                     <div className="h-px flex-1 bg-gray-200"></div>
                 </div>
 
-                {/* Login Form */}
+                {/* Signup Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
+                            Full Name
+                        </label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            required
+                            disabled={isLoading || success}
+                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                            placeholder="John Doe"
+                        />
+                    </div>
+
                     <div>
                         <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
                             Email Address
@@ -107,38 +155,47 @@ export default function LoginPage() {
                             type="email"
                             name="email"
                             required
-                            disabled={isLoading}
+                            disabled={isLoading || success}
                             className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
                             placeholder="you@example.com"
                         />
                     </div>
 
                     <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
-                            </label>
-                            <Link
-                                href="/forgot-password"
-                                className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
+                        <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
+                            Password
+                        </label>
                         <input
                             id="password"
                             type="password"
                             name="password"
                             required
-                            disabled={isLoading}
+                            disabled={isLoading || success}
                             className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
-                            placeholder="Enter your password"
+                            placeholder="Min. 8 characters"
+                            minLength={8}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-700">
+                            Confirm Password
+                        </label>
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            name="confirmPassword"
+                            required
+                            disabled={isLoading || success}
+                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                            placeholder="Confirm your password"
+                            minLength={8}
                         />
                     </div>
 
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isLoading || success}
                         className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
                     >
                         {isLoading ? (
@@ -147,19 +204,19 @@ export default function LoginPage() {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                 </svg>
-                                Signing in...
+                                Creating account...
                             </span>
                         ) : (
-                            "Sign In"
+                            "Create Account"
                         )}
                     </button>
                 </form>
 
-                {/* Sign Up Link */}
+                {/* Sign In Link */}
                 <p className="mt-6 text-center text-sm text-gray-600">
-                    Don't have an account?{" "}
-                    <Link href="/signup" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                        Create one
+                    Already have an account?{" "}
+                    <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                        Sign in
                     </Link>
                 </p>
                 </div>

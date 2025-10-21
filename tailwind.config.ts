@@ -1,24 +1,13 @@
-import { type Config } from "tailwindcss";
-import defaultTheme from "tailwindcss/defaultTheme";
+import type { Config } from "tailwindcss";
 
 export default {
-  content: ["./src/**/*.{ts,tsx}"],
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
-    extend: {
-      colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: "hsl(var(--primary))",
-        primaryForeground: "hsl(var(--primary-foreground))",
-        secondary: "hsl(var(--secondary))",
-        accent: "hsl(var(--accent))",
-        accentForeground: "hsl(var(--accent-foreground))",
-        muted: "hsl(var(--muted))",
-      },
-      fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
-      },
-    },
+    extend: {},
   },
   plugins: [],
 } satisfies Config;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { QuestionCard } from "../dashboard/_components/QuestionCard";
 import UpcomingTasksCard from "../dashboard/_components/Upcoming";
